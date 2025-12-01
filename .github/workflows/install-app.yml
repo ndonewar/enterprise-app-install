@@ -41,6 +41,12 @@ jobs:
           # Generate JWT for GitHub App authentication (using Installer App credentials)
           # Based on: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
 
+          # Write private key to temp file (handles multi-line PEM format)
+          KEY_FILE=$(mktemp)
+          echo "${INSTALLER_APP_PRIVATE_KEY}" > "${KEY_FILE}"
+          chmod 600 "${KEY_FILE}"
+          trap "rm -f ${KEY_FILE}" EXIT
+
           NOW=$(date +%s)
           IAT=$((NOW - 60))  # Issued 60 seconds ago to allow for clock drift
           EXP=$((NOW + 600)) # Expires in 10 minutes
@@ -56,7 +62,7 @@ jobs:
 
           # Sign the JWT
           HEADER_PAYLOAD="${HEADER}.${PAYLOAD}"
-          SIGNATURE=$(openssl dgst -sha256 -sign <(echo -n "${INSTALLER_APP_PRIVATE_KEY}") <(echo -n "${HEADER_PAYLOAD}") | b64enc)
+          SIGNATURE=$(echo -n "${HEADER_PAYLOAD}" | openssl dgst -sha256 -sign "${KEY_FILE}" | b64enc)
 
           JWT="${HEADER_PAYLOAD}.${SIGNATURE}"
           echo "jwt=${JWT}" >> "$GITHUB_OUTPUT"
