@@ -20,7 +20,8 @@ on:
 env:
   # Configure these values for your enterprise
   ENTERPRISE_SLUG: ${{ vars.ENTERPRISE_SLUG }}
-  APP_CLIENT_ID: ${{ vars.APP_CLIENT_ID }}
+  APP_ID: ${{ vars.APP_ID }}              # Numeric App ID (for JWT)
+  APP_CLIENT_ID: ${{ vars.APP_CLIENT_ID }} # Alphanumeric Client ID (for API calls)
 
 jobs:
   install-app:
@@ -44,8 +45,8 @@ jobs:
           # Create JWT header
           HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
 
-          # Create JWT payload
-          PAYLOAD=$(echo -n "{\"iat\":${IAT},\"exp\":${EXP},\"iss\":\"${APP_CLIENT_ID}\"}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+          # Create JWT payload (iss must be the numeric App ID)
+          PAYLOAD=$(echo -n "{\"iat\":${IAT},\"exp\":${EXP},\"iss\":\"${APP_ID}\"}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
 
           # Sign the JWT
           SIGNATURE=$(echo -n "${HEADER}.${PAYLOAD}" | openssl dgst -sha256 -sign <(echo "$APP_PRIVATE_KEY") | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
@@ -148,8 +149,8 @@ jobs:
             CHECK_HTTP_CODE=$(echo "$CHECK_RESPONSE" | tail -n1)
             CHECK_BODY=$(echo "$CHECK_RESPONSE" | sed '$d')
 
-            # Check if our app is already installed
-            APP_INSTALLED=$(echo "$CHECK_BODY" | jq -r ".installations[]? | select(.app_id == (${APP_CLIENT_ID} | tonumber)) | .id" 2>/dev/null || echo "")
+            # Check if our app is already installed (compare with numeric APP_ID)
+            APP_INSTALLED=$(echo "$CHECK_BODY" | jq -r ".installations[]? | select(.app_id == ${APP_ID}) | .id" 2>/dev/null || echo "")
 
             if [ -n "$APP_INSTALLED" ] && [ "$APP_INSTALLED" != "null" ]; then
               echo "App already installed in $ORG (installation ID: $APP_INSTALLED)"
