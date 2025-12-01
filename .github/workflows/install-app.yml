@@ -162,6 +162,11 @@ jobs:
             CHECK_HTTP_CODE=$(echo "$CHECK_RESPONSE" | tail -n1)
             CHECK_BODY=$(echo "$CHECK_RESPONSE" | sed '$d')
 
+            # Debug: print installations response
+            echo "Check API response (HTTP ${CHECK_HTTP_CODE}):"
+            echo "$CHECK_BODY" | jq '.' 2>/dev/null || echo "$CHECK_BODY"
+            echo "Looking for app_id: ${TARGET_APP_ID}"
+
             # Check if target app is already installed (compare with numeric TARGET_APP_ID)
             APP_INSTALLED=$(echo "$CHECK_BODY" | jq -r ".installations[]? | select(.app_id == ${TARGET_APP_ID}) | .id" 2>/dev/null || echo "")
 
