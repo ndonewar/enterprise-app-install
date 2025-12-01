@@ -4,3 +4,4 @@
 # Example:
 # my-org-1
 # my-org-2
+step-integration-tests
