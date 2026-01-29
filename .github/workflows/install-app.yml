@@ -9,9 +9,6 @@ on:
         required: false
         default: 'false'
         type: boolean
-  # Scheduled run (daily at midnight UTC)
-  schedule:
-    - cron: '0 0 * * *'
   # Run when organizations.txt changes
   push:
     paths:
