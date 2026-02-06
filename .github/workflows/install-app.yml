@@ -7,7 +7,7 @@ on:
       dry_run:
         description: 'Dry run - only check installation status without installing'
         required: false
-        default: 'false'
+        default: false
         type: boolean
   # Run when organizations.txt changes
   push:

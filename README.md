@@ -22,8 +22,8 @@ The installer app is an enterprise-owned GitHub App that has permission to insta
    - **Homepage URL**: Your enterprise URL or this repository URL
    - **Webhook**: Uncheck "Active" (not needed)
 4. Set permissions:
-   - Under **Organization permissions**, set **Enterprise organization installations** to **Read and write**
-5. Under **Where can this GitHub App be installed?**, select **Only on this account**
+   - Under **Enterprise permissions**, set **Enterprise organization installations** to **Read and write**
+5. Under **Where can this GitHub App be installed?**, select **Only YOUR-ENTERPRISE-owned organizations**
 6. Click **Create GitHub App**
 
 ### 2. Generate and Save Private Key
@@ -42,17 +42,21 @@ The installer app is an enterprise-owned GitHub App that has permission to insta
 
 1. On the app's settings page, copy the **Client ID** (starts with `Iv`)
 
-### 5. Configure Repository Secrets and Variables
+### 5. Create a New Repository 
 
-Go to this repository's **Settings > Secrets and variables > Actions**
+Create a new repository and copy the files from this repo into it.
 
-#### Secrets
+### 6. Configure Repository Secrets and Variables
+
+Go to that repository's **Settings > Secrets and variables > Actions**
+
+#### Secrets tab > Repository secrets
 
 | Name | Value |
 |------|-------|
 | `INSTALLER_APP_PRIVATE_KEY` | Contents of the `.pem` file (include the BEGIN/END lines) |
 
-#### Variables
+#### Variables tab > Repository variables
 
 | Name | Value |
 |------|-------|
